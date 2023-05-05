@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  api:
+    container_name: "node-challenge-${NODE_ENV:-dev}"
+    image: "node-challenge-${NODE_ENV:-dev}"
+    environment:
+      - NODE_ENV=${NODE_ENV:-dev}
+      - MONGO_URI=mongodb://user:pass1234@mongodb:27017/node_challenge?authSource=admin
+      - DB_USER=${MONGO_USER:-user}
+      - DB_PASS=${MONGO_PASSWORD:-pass1234}
+      - DB_NAME=${MONGO_DATABASE:-node_challenge}
+      - DB_HOST=${DB_HOST:-mongodb}
+    build: . 
+    ports:
+      - 3000:3000
+    networks:
+      - nesjs-network
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo
+    hostname: mongodb
+    container_name: mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-user}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-pass1234}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-node_challenge}
+    ports:
+      - "27017:27017"
+    #volumes:
+    #  - mongodb-data:/data/db
+    networks:
+      - nesjs-network
+
+networks:
+  nesjs-network:
