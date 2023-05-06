@@ -66,10 +66,10 @@ describe('UsersController', () => {
     expect(userService.update).toBeCalledWith('fakeId', requestBody);
   });
 
-  it('findAll: Should be able to load users', async () => {
+  it('findAll: Should be able to load users (page 1)', async () => {
     const spy = jest.spyOn(userService, 'findAll').mockResolvedValue([]);
 
-    await controller.findAll();
+    await controller.findAll({ page: 1, pageSize: 10 });
 
     expect(userService.findAll).toBeCalledTimes(1);
   });

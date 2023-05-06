@@ -28,14 +28,32 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-  it('findAll: should return all users', async () => {
+  it('findAll: should return all users (page 1)', async () => {
     const user = getFakeUser();
     const spy = jest.spyOn(mockUserModel, 'find').mockResolvedValue([user]);
 
-    const result = await service.findAll();
+    const result = await service.findAll(1, 10);
 
     expect(result).toEqual([user]);
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledWith(
+      {},
+      {},
+      { skip: 0, limit: 10, sort: { _id: 1 } },
+    );
+  });
+
+  it('findAll: should return all users (page 2)', async () => {
+    const user = getFakeUser();
+    const spy = jest.spyOn(mockUserModel, 'find').mockResolvedValue([user]);
+
+    const result = await service.findAll(2, 20);
+
+    expect(result).toEqual([user]);
+    expect(spy).toBeCalledWith(
+      {},
+      {},
+      { skip: 20, limit: 20, sort: { _id: 1 } },
+    );
   });
 
   it('findOne: should return a given user', async () => {

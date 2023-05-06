@@ -37,23 +37,47 @@ describe('UsersController (e2e)', () => {
     });
 
     test.each([
-      '',
-      'invlaid_base64_token',
-      Buffer.from('user_invalid:password').toString('base64'),
-      Buffer.from('user_invalid:password_invalid').toString('base64'),
-      Buffer.from('user2:password_invalid').toString('base64'),
-    ])('should return 401 when auth token %s is invalid', (token) => {
-      const body = {
-        name: 'John',
-        lastName: 'Doe',
-        address: 'Fake street 123',
-      };
-      return request(app.getHttpServer())
-        .get('/users')
-        .set('content-type', 'application/json')
-        .set('authorization', `Basic ${token}`)
-        .send(body)
-        .expect(401);
-    });
+      { page: -1, pageSize: 10 },
+      { page: 0, pageSize: 10 },
+      { page: 'a', pageSize: 10 },
+      { page: 1, pageSize: 100 },
+      { page: 1, pageSize: -1 },
+      { page: 1, pageSize: 'a' },
+    ])(
+      'should return 400 when pagination information is not valid %o',
+      ({ page, pageSize }) => {
+        const body = {
+          name: 'John',
+          lastName: 'Doe',
+          address: 'Fake street 123',
+        };
+        return request(app.getHttpServer())
+          .get(`/users?page=${page}&pageSize=${pageSize}`)
+          .set('content-type', 'application/json')
+          .set('authorization', `Basic ${authTokenBase64}`)
+          .send(body)
+          .expect(400);
+      },
+    );
+  });
+
+  test.each([
+    '',
+    'invlaid_base64_token',
+    Buffer.from('user_invalid:password').toString('base64'),
+    Buffer.from('user_invalid:password_invalid').toString('base64'),
+    Buffer.from('user2:password_invalid').toString('base64'),
+  ])('should return 401 when auth token %s is invalid', (token) => {
+    const body = {
+      name: 'John',
+      lastName: 'Doe',
+      address: 'Fake street 123',
+    };
+    return request(app.getHttpServer())
+      .get('/users')
+      .set('content-type', 'application/json')
+      .set('authorization', `Basic ${token}`)
+      .send(body)
+      .expect(401);
   });
 });

@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +19,7 @@ import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ImageValidatorPipe } from './image.validator';
+import { PaginationDTO } from './dto/pagination.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard('local'))
@@ -38,8 +40,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: PaginationDTO) {
+    return this.usersService.findAll(query.page, query.pageSize);
   }
 
   @Get(':id')

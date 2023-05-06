@@ -1,7 +1,7 @@
 import {
   FileTypeValidator,
   MaxFileSizeValidator,
-  ParseFilePipe
+  ParseFilePipe,
 } from '@nestjs/common';
 
 const MB = 1000000;
@@ -13,7 +13,7 @@ export class ImageValidatorPipe extends ParseFilePipe {
         new MaxFileSizeValidator({ maxSize: 10 * MB }),
         new FileTypeValidator({ fileType: 'image/jpeg' }),
       ],
-      fileIsRequired: true
+      fileIsRequired: true,
     });
   }
 }

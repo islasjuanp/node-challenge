@@ -18,8 +18,12 @@ export class UsersService {
     return createdUser.save();
   }
 
-  findAll() {
-    return this.userModel.find();
+  findAll(page: number = 1, pageSize: number = 10) {
+    return this.userModel.find(
+      {},
+      {},
+      { sort: { _id: 1 }, skip: (page - 1) * pageSize, limit: pageSize },
+    );
   }
 
   findOne(id: string) {
