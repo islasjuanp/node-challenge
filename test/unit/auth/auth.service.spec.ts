@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../../src/auth/auth.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { Auth, AuthDocument } from './entities/auth.schema';
+import { Auth, AuthDocument } from '../../../src/auth/entities/auth.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 

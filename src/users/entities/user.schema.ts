@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { time } from 'console';
 import { HydratedDocument } from 'mongoose';
+import { Image, ImageSchema } from './image.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -14,6 +14,9 @@ export class User {
 
   @Prop({ required: true })
   address: string;
+
+  @Prop({ type: ImageSchema })
+  profilePicture: Image;
 
   constructor(name: string, lastName: string, address: string) {
     this.name = name;
