@@ -79,13 +79,13 @@ describe('UsersService', () => {
     const result = await service.update('fakeId', newFields);
 
     expect(result).toEqual(user);
-    expect(spy).toBeCalledWith({ id: 'fakeId' }, newFields);
+    expect(spy).toBeCalledWith({ _id: 'fakeId' }, newFields);
   });
 
   it('update: should update a given user with fields and image', async () => {
     const user = getFakeUser();
-    const profilePicture = getFakeImage()
-    const newFields = { name: 'John' }
+    const profilePicture = getFakeImage();
+    const newFields = { name: 'John' };
     const spy = jest
       .spyOn(mockUserModel, 'findOneAndUpdate')
       .mockResolvedValue(user);
@@ -93,6 +93,9 @@ describe('UsersService', () => {
     const result = await service.update('fakeId', newFields, profilePicture);
 
     expect(result).toEqual(user);
-    expect(spy).toBeCalledWith({ id: 'fakeId' }, {...newFields, profilePicture });
+    expect(spy).toBeCalledWith(
+      { _id: 'fakeId' },
+      { ...newFields, profilePicture },
+    );
   });
 });

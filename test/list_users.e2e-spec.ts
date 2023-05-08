@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
-  let authTokenBase64 = Buffer.from('user1:password').toString('base64');
+  const authTokenBase64 = Buffer.from('user1:password').toString('base64');
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

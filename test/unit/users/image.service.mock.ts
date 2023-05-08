@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
 export class MockImageService {
-  upload = (file: Express.Multer.File) => jest.fn();
-  download = (id: ObjectId) => jest.fn();
+  upload = (_file: Express.Multer.File) => jest.fn();
+  download = (_id: ObjectId) => jest.fn();
 }

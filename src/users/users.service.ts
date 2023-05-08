@@ -18,7 +18,7 @@ export class UsersService {
     return createdUser.save();
   }
 
-  findAll(page: number = 1, pageSize: number = 10) {
+  findAll(page = 1, pageSize = 10) {
     return this.userModel.find(
       {},
       {},
@@ -30,9 +30,15 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, profilePicture?: Image) {
-    const update = profilePicture ? {...updateUserDto, profilePicture } : updateUserDto
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    profilePicture?: Image,
+  ) {
+    const update = profilePicture
+      ? { ...updateUserDto, profilePicture }
+      : updateUserDto;
 
-    return this.userModel.findOneAndUpdate({ id }, update);
+    return this.userModel.findOneAndUpdate({ _id: id }, update);
   }
 }

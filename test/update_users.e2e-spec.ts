@@ -3,10 +3,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { resolve } from 'path';
+import { faker } from '@faker-js/faker';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
   const authTokenBase64 = Buffer.from('user1:password').toString('base64');
+  let userId = 'fakeId'
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,34 +20,52 @@ describe('UsersController (e2e)', () => {
     await app.init();
   });
 
-  describe('POST /users', () => {
+  describe('PATCH /users', () => {
+    
+    beforeEach((done) => {
+      const imagePath = resolve(__dirname, 'files/img_avatar.jpg');
+      request(app.getHttpServer())
+        .post('/users')
+        .set('authorization', `Basic ${authTokenBase64}`)
+        .attach('profilePicture', imagePath)
+        .field('name', faker.name.firstName())
+        .field('lastName', faker.name.lastName())
+        .field('address', faker.address.streetAddress())
+        .end((err, res) => {
+          if (err) done(err)
+          userId = res.body._id
+          done()
+        })
+    })
+
     test.each([{ name: 'John', lastName: 'Doe', address: 'Fake street 123' }])(
-      'should return 201 when valid request with body %o',
+      'should return 200 when valid request with body %o',
       (body) => {
         const imagePath = resolve(__dirname, 'files/img_avatar.jpg');
         return request(app.getHttpServer())
-          .post('/users')
+          .patch(`/users/${userId}`)
           .set('authorization', `Basic ${authTokenBase64}`)
           .attach('profilePicture', imagePath)
           .field('name', body.name)
           .field('lastName', body.lastName)
           .field('address', body.address)
-          .expect(201);
+          .expect(200)
+          .expect(res => {
+            expect(res.body._id).toBe(userId)
+          });
       },
     );
 
     test.each([
-      {},
-      { name: 'John' },
-      { name: 'John', lastName: 'Doe' },
-      { lastName: 'Doe', address: 'Fake street 123' },
-      { lastName: 'Doe' },
-      { name: 'John', address: 'Fake street 123' },
-      { address: 'Fake street 123' },
-      { name: 'John', lastName: 'Doe', address: 'Fake street 123' },
+      { name: 1 },
+      { lastName: 1 },
+      { address: 1 },
+      { name: '' },
+      { lastName: '' },
+      { address: '' },
     ])('should return 400 when invalid request with body %o', (body) => {
       return request(app.getHttpServer())
-        .post('/users')
+        .patch(`/users/${userId}`)
         .set('content-type', 'application/json')
         .set('authorization', `Basic ${authTokenBase64}`)
         .send(body)
@@ -65,7 +85,7 @@ describe('UsersController (e2e)', () => {
         address: 'Fake street 123',
       };
       return request(app.getHttpServer())
-        .post('/users')
+        .patch(`/users/${userId}`)
         .set('content-type', 'application/json')
         .set('authorization', `Basic ${token}`)
         .send(body)

@@ -45,12 +45,8 @@ describe('UsersController', () => {
 
   it('create: Should be able to create an user', async () => {
     const image: Image = getFakeImage();
-    const userCreateSpy = jest
-      .spyOn(userService, 'create')
-      .mockResolvedValue(null);
-    const imageUploadSpy = jest
-      .spyOn(imageService, 'upload')
-      .mockResolvedValue(image);
+    jest.spyOn(userService, 'create').mockResolvedValue(null);
+    jest.spyOn(imageService, 'upload').mockResolvedValue(image);
 
     const testFile = getFakeFile();
 
@@ -61,7 +57,7 @@ describe('UsersController', () => {
   });
 
   it('update: Should be able to update an user (without image)', async () => {
-    const spy = jest.spyOn(userService, 'update').mockResolvedValue(null);
+    jest.spyOn(userService, 'update').mockResolvedValue(null);
     const requestBody = getRandomRequest();
     await controller.update('fakeId', requestBody, null);
 
@@ -70,11 +66,11 @@ describe('UsersController', () => {
 
   it('update: Should be able to update an user (with image)', async () => {
     const requestBody = getRandomRequest();
-    const imageFile = getFakeFile()
-    const image = getFakeImage() as ImageDocument
-    const spy = jest.spyOn(userService, 'update').mockResolvedValue(null);
-    const imageSpy = jest.spyOn(imageService, 'upload').mockResolvedValue(image);
-    
+    const imageFile = getFakeFile();
+    const image = getFakeImage() as ImageDocument;
+    jest.spyOn(userService, 'update').mockResolvedValue(null);
+    jest.spyOn(imageService, 'upload').mockResolvedValue(image);
+
     await controller.update('fakeId', requestBody, imageFile);
 
     expect(userService.update).toBeCalledWith('fakeId', requestBody, image);
@@ -82,7 +78,7 @@ describe('UsersController', () => {
   });
 
   it('findAll: Should be able to load users (page 1)', async () => {
-    const spy = jest.spyOn(userService, 'findAll').mockResolvedValue([]);
+    jest.spyOn(userService, 'findAll').mockResolvedValue([]);
 
     await controller.findAll({ page: 1, pageSize: 10 });
 
@@ -90,7 +86,7 @@ describe('UsersController', () => {
   });
 
   it('findOne: Should throw  NotFound exception when user %o', async () => {
-    const spy = jest.spyOn(userService, 'findOne').mockResolvedValue(null);
+    jest.spyOn(userService, 'findOne').mockResolvedValue(null);
 
     expect(controller.findOne('fakeId')).rejects.toBeInstanceOf(
       NotFoundException,
@@ -113,10 +109,8 @@ describe('UsersController', () => {
         uploadDate: new Date(),
       },
     };
-    const spy = jest
-      .spyOn(userService, 'findOne')
-      .mockResolvedValue(user as UserDocument);
-    const imageSpy = jest
+    jest.spyOn(userService, 'findOne').mockResolvedValue(user as UserDocument);
+    jest
       .spyOn(imageService, 'download')
       .mockResolvedValue(Buffer.from('fake buffer image'));
 
@@ -133,7 +127,7 @@ describe('UsersController', () => {
     'findImage: Should throw  NotFound exception when user %o has no picture',
     async (user) => {
       const response = createMockResponse();
-      const spy = jest
+      jest
         .spyOn(userService, 'findOne')
         .mockResolvedValue(user as UserDocument);
 
@@ -159,12 +153,8 @@ describe('UsersController', () => {
         uploadDate: new Date(),
       },
     };
-    const spy = jest
-      .spyOn(userService, 'findOne')
-      .mockResolvedValue(user as UserDocument);
-    const imageSpy = jest
-      .spyOn(imageService, 'download')
-      .mockResolvedValue(null);
+    jest.spyOn(userService, 'findOne').mockResolvedValue(user as UserDocument);
+    jest.spyOn(imageService, 'download').mockResolvedValue(null);
 
     expect(controller.findImage('fakeId', response)).rejects.toBeInstanceOf(
       NotFoundException,

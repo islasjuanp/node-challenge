@@ -5,7 +5,7 @@ import { UserSchema } from '../src/users/entities/user.schema';
 
 async function seedDatabase() {
   const uri = process.env.MONGO_URI;
-  const client = await mongoose.connect(uri);
+  await mongoose.connect(uri);
 
   const AuthModel = mongoose.model('auths', AuthSchema);
   const UserModel = mongoose.model('users', UserSchema);

@@ -33,7 +33,7 @@ describe('AuthService', () => {
     const password = 'random_password';
     const hash = await bcrypt.hash(password, saltOrRounds);
 
-    const spy = jest
+    jest
       .spyOn(mockAuthModel, 'findOne') // <- spy on what you want
       .mockResolvedValue({ username: 'user1', password: hash } as AuthDocument);
 
@@ -42,7 +42,7 @@ describe('AuthService', () => {
   });
 
   it('should return false when username is invalid', async () => {
-    const spy = jest
+    jest
       .spyOn(mockAuthModel, 'findOne') // <- spy on what you want
       .mockResolvedValue(null);
 
@@ -51,7 +51,7 @@ describe('AuthService', () => {
   });
 
   it('should return false when password is invalid', async () => {
-    const spy = jest
+    jest
       .spyOn(mockAuthModel, 'findOne') // <- spy on what you want
       .mockResolvedValue({ username: 'user1', password: '' } as AuthDocument);
 

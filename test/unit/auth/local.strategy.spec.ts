@@ -4,8 +4,12 @@ import { LocalStrategy } from '../../../src/auth/local.strategy';
 import { UnauthorizedException } from '@nestjs/common';
 
 class TestLocalStrategy extends LocalStrategy {
-  fail(...args: []) {}
-  success(...args: []) {}
+  fail(...args: []) {
+    console.debug(args);
+  }
+  success(...args: []) {
+    console.debug(args);
+  }
   error(err) {
     console.error(err);
   }
@@ -39,14 +43,14 @@ describe('LocalStrategy', () => {
   });
 
   it('validate: should return the user when it is valid', async () => {
-    const spy = jest.spyOn(service, 'validateUser').mockResolvedValue(true);
+    jest.spyOn(service, 'validateUser').mockResolvedValue(true);
 
     const result = await strategy.validate('user1', 'password');
     expect(result).toBeTruthy();
   });
 
   it('validate: should throw an exception when user is invalid', async () => {
-    const spy = jest.spyOn(service, 'validateUser').mockResolvedValue(false);
+    jest.spyOn(service, 'validateUser').mockResolvedValue(false);
 
     expect(strategy.validate('user1', 'password')).rejects.toBeInstanceOf(
       UnauthorizedException,
@@ -74,9 +78,7 @@ describe('LocalStrategy', () => {
       .spyOn(strategy, 'validate')
       .mockResolvedValue(true);
 
-    const successSpy = jest
-      .spyOn(strategy, 'success')
-      .mockImplementation(() => {});
+    jest.spyOn(strategy, 'success').mockImplementation(() => {});
 
     const headers = { authorization: 'Basic dXNlcjI6cGFzc3dvcmQ=' };
     strategy.authenticate({ headers }, {});
