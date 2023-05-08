@@ -3,12 +3,15 @@ import { UsersController } from '../../../src/users/users.controller';
 import { UsersService } from '../../../src/users/users.service';
 import { getModelToken } from '@nestjs/mongoose';
 
-import { User } from '../../../src/users/entities/user.schema';
+import { User, UserDocument } from '../../../src/users/entities/user.schema';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 import { ImageService } from '../../../src/users/image.service';
 import { Image } from '../../../src/users/entities/image.schema';
 import { MockImageService } from './image.service.mock';
 import { getFakeFile, getFakeImage, getRandomRequest } from './data.utils';
+import { NotFoundException } from '@nestjs/common';
+import { createMockResponse } from '../../utils/express.util';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -21,7 +24,7 @@ describe('UsersController', () => {
       providers: [
         {
           provide: getModelToken(User.name),
-          useValue: Model,
+          useValue: { Model },
         },
         {
           provide: ImageService,
@@ -74,10 +77,87 @@ describe('UsersController', () => {
     expect(userService.findAll).toBeCalledTimes(1);
   });
 
-  it('findOne: Should be able to load a given users', async () => {
+  it('findOne: Should throw  NotFound exception when user %o', async () => {
     const spy = jest.spyOn(userService, 'findOne').mockResolvedValue(null);
 
-    await controller.findOne('fakeId');
+    expect(controller.findOne('fakeId')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    expect(userService.findOne).toBeCalledWith('fakeId');
+  });
+
+
+  it('findImage: Should return the image for a given user', async () => {
+    const response = createMockResponse();
+    const imageId = new ObjectId('123456789012')
+    const user = {
+      name: 'John',
+      lastName: 'Doe',
+      address: 'Fake Street 123',
+      profilePicture: {
+        _id: imageId,
+        filename: '',
+        contentType: '',
+        length: 0,
+        uploadDate: new Date(),
+      },
+    };
+    const spy = jest
+      .spyOn(userService, 'findOne')
+      .mockResolvedValue(user as UserDocument);
+    const imageSpy = jest
+      .spyOn(imageService, 'download')
+      .mockResolvedValue(Buffer.from("fake buffer image"));
+
+    controller.findImage('fakeId', response)
+
+    expect(userService.findOne).toBeCalledWith('fakeId');
+  });
+
+  test.each([
+    null,
+    {},
+    { name: 'John', lastName: 'Doe', address: 'Fake Street 123' },
+  ])(
+    'findImage: Should throw  NotFound exception when user %o has no picture',
+    async (user) => {
+      const response = createMockResponse();
+      const spy = jest
+        .spyOn(userService, 'findOne')
+        .mockResolvedValue(user as UserDocument);
+
+      expect(controller.findImage('fakeId', response)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+      expect(userService.findOne).toBeCalledWith('fakeId');
+    },
+  );
+
+  it('findImage: Should throw  NotFound exception when image is not found', async () => {
+    const response = createMockResponse();
+    const imageId = new ObjectId('123456789012')
+    const user = {
+      name: 'John',
+      lastName: 'Doe',
+      address: 'Fake Street 123',
+      profilePicture: {
+        _id: imageId,
+        filename: '',
+        contentType: '',
+        length: 0,
+        uploadDate: new Date(),
+      },
+    };
+    const spy = jest
+      .spyOn(userService, 'findOne')
+      .mockResolvedValue(user as UserDocument);
+    const imageSpy = jest
+      .spyOn(imageService, 'download')
+      .mockResolvedValue(null);
+
+    expect(controller.findImage('fakeId', response)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
 
     expect(userService.findOne).toBeCalledWith('fakeId');
   });

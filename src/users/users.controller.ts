@@ -10,6 +10,7 @@ import {
   UploadedFile,
   Res,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -45,16 +46,31 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
   @Get(':id/image')
   async findImage(@Param('id') id: string, @Res() res: Response) {
     const user = await this.usersService.findOne(id);
+
+    if (!user || !user.profilePicture) {
+      throw new NotFoundException('Image not found');
+    }
+
     const profilePicture = await this.imageService.download(
       user.profilePicture._id,
     );
+
+    if (!profilePicture) {
+      throw new NotFoundException('Image not found');
+    }
 
     res.set('Content-Type', 'image/png');
     res.send(profilePicture);

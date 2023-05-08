@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { faker } from '@faker-js/faker';
 import { Image } from '../../../src/users/entities/image.schema';
-import { User } from '../../../src/users/entities/user.schema';
 
 export const getFakeImage = (): Image => {
   return {
