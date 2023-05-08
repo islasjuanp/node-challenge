@@ -30,7 +30,9 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.findOneAndUpdate({ id }, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto, profilePicture?: Image) {
+    const update = profilePicture ? {...updateUserDto, profilePicture } : updateUserDto
+
+    return this.userModel.findOneAndUpdate({ id }, update);
   }
 }

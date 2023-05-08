@@ -34,7 +34,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('profilePicture'))
   async create(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFile(new ImageValidatorPipe()) file: Express.Multer.File,
+    @UploadedFile(new ImageValidatorPipe({ isRequired: true })) file: Express.Multer.File,
   ) {
     const image = await this.imageService.upload(file);
     return this.usersService.create(createUserDto, image);
@@ -77,7 +77,18 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseInterceptors(FileInterceptor('profilePicture'))
+  async update(
+    @Param('id') id: string, 
+    @Body() updateUserDto: UpdateUserDto, 
+    @UploadedFile(new ImageValidatorPipe({ isRequired: false })) file: Express.Multer.File,
+  ) {
+
+    if (file) {
+      const image = await this.imageService.upload(file);
+      return this.usersService.update(id, updateUserDto, image); 
+    }
+    
     return this.usersService.update(id, updateUserDto);
   }
 }

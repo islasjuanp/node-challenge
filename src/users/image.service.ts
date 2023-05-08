@@ -8,13 +8,11 @@ import { createReadStream } from 'fs';
 @Injectable()
 export class ImageService {
   private readonly logger = new Logger(ImageService.name);
-  private readonly bucket: GridFSBucket;
 
-  constructor(@InjectModel(Image.name) private imageModel: Model<Image>) {
-    this.bucket = new GridFSBucket(this.imageModel.db.db, {
-      bucketName: 'uploads',
-    });
-  }
+  constructor(
+    @InjectModel(Image.name) private imageModel: Model<Image>,
+    private bucket: GridFSBucket,
+  ) {}
 
   async upload(file: Express.Multer.File): Promise<Image> {
     const uploadStream = this.bucket.openUploadStream(file.originalname);

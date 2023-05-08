@@ -3,7 +3,7 @@ import { UsersService } from '../../../src/users/users.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../../src/users/entities/user.schema';
 import { Model } from 'mongoose';
-import { getFakeUser } from './data.utils';
+import { getFakeImage, getFakeUser } from './data.utils';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -80,5 +80,19 @@ describe('UsersService', () => {
 
     expect(result).toEqual(user);
     expect(spy).toBeCalledWith({ id: 'fakeId' }, newFields);
+  });
+
+  it('update: should update a given user with fields and image', async () => {
+    const user = getFakeUser();
+    const profilePicture = getFakeImage()
+    const newFields = { name: 'John' }
+    const spy = jest
+      .spyOn(mockUserModel, 'findOneAndUpdate')
+      .mockResolvedValue(user);
+
+    const result = await service.update('fakeId', newFields, profilePicture);
+
+    expect(result).toEqual(user);
+    expect(spy).toBeCalledWith({ id: 'fakeId' }, {...newFields, profilePicture });
   });
 });
