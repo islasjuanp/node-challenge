@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
   const authTokenBase64 = Buffer.from('user1:password').toString('base64');
-  let userId = 'fakeId'
+  let userId = 'fakeId';
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,7 +21,6 @@ describe('UsersController (e2e)', () => {
   });
 
   describe('PATCH /users', () => {
-    
     beforeEach((done) => {
       const imagePath = resolve(__dirname, 'files/img_avatar.jpg');
       request(app.getHttpServer())
@@ -32,11 +31,11 @@ describe('UsersController (e2e)', () => {
         .field('lastName', faker.name.lastName())
         .field('address', faker.address.streetAddress())
         .end((err, res) => {
-          if (err) done(err)
-          userId = res.body._id
-          done()
-        })
-    })
+          if (err) done(err);
+          userId = res.body._id;
+          done();
+        });
+    });
 
     test.each([{ name: 'John', lastName: 'Doe', address: 'Fake street 123' }])(
       'should return 200 when valid request with body %o',
@@ -50,8 +49,8 @@ describe('UsersController (e2e)', () => {
           .field('lastName', body.lastName)
           .field('address', body.address)
           .expect(200)
-          .expect(res => {
-            expect(res.body._id).toBe(userId)
+          .expect((res) => {
+            expect(res.body._id).toBe(userId);
           });
       },
     );

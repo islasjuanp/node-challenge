@@ -17,7 +17,7 @@ export const getRandomRequest = () => {
     name: faker.name.firstName(),
     lastName: faker.name.lastName(),
     address: faker.address.streetAddress(),
-    profilePicture: '',
+    profilePicture: getFakeFile(),
   };
 };
 

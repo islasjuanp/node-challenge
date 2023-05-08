@@ -21,8 +21,17 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ImageValidatorPipe } from './image.validator';
 import { PaginationDTO } from './dto/pagination.dto';
+import {
+  ApiConsumes,
+  ApiResponse,
+  ApiQuery,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('users')
+@ApiSecurity('basic')
 @UseGuards(AuthGuard('local'))
 export class UsersController {
   constructor(
@@ -31,6 +40,12 @@ export class UsersController {
   ) {}
 
   @Post()
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized Request.' })
   @UseInterceptors(FileInterceptor('profilePicture'))
   async create(
     @Body() createUserDto: CreateUserDto,
@@ -42,11 +57,20 @@ export class UsersController {
   }
 
   @Get()
+  @ApiConsumes('application/json')
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiResponse({ status: 200, description: 'Returns users information.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized Request.' })
   findAll(@Query() query: PaginationDTO) {
     return this.usersService.findAll(query.page, query.pageSize);
   }
 
   @Get(':id')
+  @ApiConsumes('application/json')
+  @ApiResponse({ status: 200, description: 'Returns user information.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized Request.' })
+  @ApiResponse({ status: 404, description: 'User was not found' })
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne(id);
 
@@ -58,6 +82,10 @@ export class UsersController {
   }
 
   @Get(':id/image')
+  @ApiConsumes('application/json')
+  @ApiResponse({ status: 200, description: 'Returns user image.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized Request.' })
+  @ApiResponse({ status: 404, description: 'User image was not found' })
   async findImage(@Param('id') id: string, @Res() res: Response) {
     const user = await this.usersService.findOne(id);
 
@@ -79,6 +107,12 @@ export class UsersController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('profilePicture'))
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully updated.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized Request.' })
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

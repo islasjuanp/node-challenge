@@ -16,6 +16,21 @@ A new company needs to address these requirements:
 $ npm install
 ```
 
+## Setting up local environment
+
+
+### Running dependencies on docker
+
+```bash
+docker-compose up -d mongodb
+```
+
+### Configuring env variables 
+
+```bash
+export MONGO_URI=mongodb://user:pass1234@localhost:27017/node_challenge?authSource=admin
+```
+
 ## Running the app
 
 ```bash
@@ -27,11 +42,17 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# Running it using docker 
+$ docker-compose up -d
 ```
 
 ## Test
 
 ```bash
+# Seed the database 
+$ npm run test:seed
+
 # unit tests
 $ npm run test
 
@@ -42,38 +63,15 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Documentation / Test with swagger
 
-## Test Request 
+1. Run the seeds in the local environment 
+2. Run the application 
+3. Open the following url in the browser http://localhost:3000/docs
 
+![swaggger](swagger.docs.png)
 
-### Creating user 
-```bash 
-curl -XPOST http://localhost:3000/users \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' \  
-  -d '{"name": "John", "lastName": "Doe", "address": "Fake Street 123"}'
-```
-
-### Listing users 
-```bash 
-curl -XGET http://localhost:3000/users \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'
-```
-
-### Find users 
-```bash 
-curl -XGET http://localhost:3000/users/6452fb90448bbf6d70deab1d \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/json'
-```
-
-### Updating users 
-```bash 
-curl -XPATCH http://localhost:3000/users/6452fb90448bbf6d70deab1d \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==' \
-  -H 'Accept: application/json' \
-  -d '{ "address": "7th Street 225" }'
-```
+4. Press Authorize button and introduce the following information
+  - user: user1 
+  - password: password 
+5. Test the endpoints! 
